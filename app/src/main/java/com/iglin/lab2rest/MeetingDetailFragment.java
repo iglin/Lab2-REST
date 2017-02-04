@@ -51,7 +51,16 @@ public class MeetingDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        updateUI();
+    }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        updateUI();
+    }
+
+    private void updateUI() {
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             String id = getArguments().getString(ARG_ITEM_ID);
             System.out.println("Meeting 1st id: " + id);
@@ -79,7 +88,7 @@ public class MeetingDetailFragment extends Fragment {
 
                             @Override
                             public void onCancelled(DatabaseError databaseError) { }
-                    }
+                        }
                 );
         }
     }
