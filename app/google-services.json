@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "609557501902",
+    "firebase_url": "https://lab2-rest.firebaseio.com",
+    "project_id": "lab2-rest",
+    "storage_bucket": "lab2-rest.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:609557501902:android:5be7d90b87b997d8",
+        "android_client_info": {
+          "package_name": "com.iglin.lab2rest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "609557501902-4md52mum27sqq3h5amhvdg133h2t8mq4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.iglin.lab2rest",
+            "certificate_hash": "10EA67A986E33DCB8015B0764A84A65DC6AA76E4"
+          }
+        },
+        {
+          "client_id": "609557501902-4n939jrfhdi5blvgd8h77pi02vh8mlpi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBCyUO9jHJYJC4tWvnzP54wpeelB-hn9bw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "609557501902-4n939jrfhdi5blvgd8h77pi02vh8mlpi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
