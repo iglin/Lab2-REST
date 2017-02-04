@@ -71,7 +71,7 @@ public class MeetingDetailFragment extends Fragment {
                                 mItem.setId(dataSnapshot.getKey());
                                 if (appBarLayout != null && mItem != null) {
                                     appBarLayout.setTitle(mItem.getName());
-                                    ((TextView) activity.findViewById(R.id.meeting_detail)).setText(mItem.getTime());
+                                    ((TextView) activity.findViewById(R.id.meeting_detail)).setText(mItem.getDescription());
                                 }
                             }
 
@@ -89,7 +89,7 @@ public class MeetingDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.meeting_detail)).setText(mItem.getTime());
+            ((TextView) rootView.findViewById(R.id.meeting_detail)).setText(mItem.getDescription());
         } else {
             ((TextView) rootView.findViewById(R.id.meeting_detail)).setText("ADSDAfsadADSdaSD");
         }
