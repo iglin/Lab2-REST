@@ -10,6 +10,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.api.model.StringList;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.iglin.lab2rest.model.Meeting;
+import com.iglin.lab2rest.model.Participant;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * An activity representing a single Meeting detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
@@ -29,8 +43,48 @@ public class MeetingDetailActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+
+                FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+                final String userId = firebaseAuth.getCurrentUser().getUid();
+
+                final Participant participant = new Participant();
+                participant.setId(userId);
+                database.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        participant.setName(dataSnapshot.child("users").child(userId).child("name").getValue(String.class));
+                        participant.setPosition(dataSnapshot.child("users").child(userId).child("position").getValue(String.class));
+
+                        String meetingId = getIntent().getStringExtra(MeetingDetailFragment.ARG_ITEM_ID);
+
+                        System.out.println(meetingId + " " + userId + participant.getName());
+                        Map<String, Object> toSave;
+
+                        Meeting meeting = dataSnapshot.child("meetings").child(meetingId).getValue(Meeting.class);
+                        meeting.addParticipant(participant);
+
+                        dataSnapshot.child("meetings").child(meetingId).getRef().setValue(meeting);
+
+                      /*  if (!dataSnapshot.child("meetings").child(meetingId).hasChild("participants")) {
+                            toSave = new HashMap<>();
+                            Map<String, Object> map = new HashMap<>();
+                            map.put(userId, participant);
+                            toSave.put("participants", map);
+                            Meeting meeting = dataSnapshot.child("meetings").child(meetingId).getValue(Meeting.class);
+                            meeting.addParticipant(participant);
+                            dataSnapshot.child("meetings").child(meetingId).getRef().setValue(meeting);
+                        } else {
+                            toSave = dataSnapshot.child("meetings").child(meetingId).child("participants")
+                                    .getValue(Map.class);
+                            toSave.put(userId, participant);
+                            dataSnapshot.child("meetings").child(meetingId).child("participants").getRef().setValue(toSave);
+                        }*/
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
             }
         });
 

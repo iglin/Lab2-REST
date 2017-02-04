@@ -79,7 +79,8 @@ public class MeetingDetailFragment extends Fragment {
                                 if (appBarLayout != null && mItem != null) {
                                     appBarLayout.setTitle(mItem.getName());
                                     try {
-                                        ((TextView) activity.findViewById(R.id.meeting_detail)).setText(mItem.representDetails());
+                                        TextView textView = (TextView) activity.findViewById(R.id.meeting_detail);
+                                        if (textView != null) textView.setText(mItem.representDetails());
                                     } catch (ParseException e) {
                                         e.printStackTrace();
                                     }
