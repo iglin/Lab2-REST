@@ -17,6 +17,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.iglin.lab2rest.model.Meeting;
 import com.iglin.lab2rest.model.MeetingsContentProvider;
 
+import java.text.ParseException;
+
 /**
  * A fragment representing a single Meeting detail screen.
  * This fragment is either contained in a {@link MeetingListActivity}
@@ -51,10 +53,6 @@ public class MeetingDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-          //  mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
             String id = getArguments().getString(ARG_ITEM_ID);
             System.out.println("Meeting 1st id: " + id);
 
@@ -71,7 +69,11 @@ public class MeetingDetailFragment extends Fragment {
                                 mItem.setId(dataSnapshot.getKey());
                                 if (appBarLayout != null && mItem != null) {
                                     appBarLayout.setTitle(mItem.getName());
-                                    ((TextView) activity.findViewById(R.id.meeting_detail)).setText(mItem.getDescription());
+                                    try {
+                                        ((TextView) activity.findViewById(R.id.meeting_detail)).setText(mItem.representDetails());
+                                    } catch (ParseException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
 
@@ -89,9 +91,11 @@ public class MeetingDetailFragment extends Fragment {
 
         // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.meeting_detail)).setText(mItem.getDescription());
-        } else {
-            ((TextView) rootView.findViewById(R.id.meeting_detail)).setText("ADSDAfsadADSdaSD");
+            try {
+                ((TextView) rootView.findViewById(R.id.meeting_detail)).setText(mItem.representDetails());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         return rootView;

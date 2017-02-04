@@ -3,6 +3,7 @@ package com.iglin.lab2rest.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.database.Exclude;
 
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,5 +88,18 @@ public class Meeting {
             participants = new HashMap<>();
         }
         participants.put(participant.getId(), participant);
+    }
+
+    public String representDetails() throws ParseException {
+        String result = description + "\n\n"
+                + priority + "\n\n"
+                + "From: " + DateTimeFormatter.getFullFormat(startTime) + "\n"
+                + "To: " + DateTimeFormatter.getFullFormat(endTime);
+        if (participants == null) return result;
+        result += "\n\nParticipants: ";
+        for (Participant participant : participants.values()) {
+            result += "\n" + participant.getName() + ", " + participant.getPosition();
+        }
+        return result;
     }
 }

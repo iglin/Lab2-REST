@@ -21,9 +21,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.iglin.lab2rest.model.DateTimeFormatter;
 import com.iglin.lab2rest.model.Meeting;
 import com.iglin.lab2rest.model.MeetingsContentProvider;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -141,7 +143,13 @@ public class MeetingListActivity extends AppCompatActivity {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).getName());
-            holder.mContentView.setText(mValues.get(position).getDescription());
+            try {
+                holder.mContentView.setText(mValues.get(position).getPriority() + "\n"
+                        + DateTimeFormatter.getShortFormat(mValues.get(position).getStartTime()) + "\n"
+                        + DateTimeFormatter.getShortFormat(mValues.get(position).getEndTime()));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
