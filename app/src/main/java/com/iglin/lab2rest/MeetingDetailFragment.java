@@ -63,7 +63,6 @@ public class MeetingDetailFragment extends Fragment {
     private void updateUI() {
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             String id = getArguments().getString(ARG_ITEM_ID);
-            System.out.println("Meeting 1st id: " + id);
 
             final Activity activity = this.getActivity();
             final CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
