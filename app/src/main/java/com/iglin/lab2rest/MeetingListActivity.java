@@ -139,6 +139,8 @@ public class MeetingListActivity extends AppCompatActivity {
         //noinspection SimplifiableIfStatement
         switch (id) {
             case R.id.item_new:
+                Intent intent = new Intent(this, NewMeetingActivity.class);
+                startActivity(intent);
                 break;
             case R.id.item_search:
                 Toast toast = Toast.makeText(getApplicationContext(),
