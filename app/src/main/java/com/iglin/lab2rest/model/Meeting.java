@@ -54,6 +54,7 @@ public class Meeting {
         return endTime.getTime();
     }
 
+    @Exclude
     public Date getEndTimeAsDate() {
         return endTime;
     }
@@ -71,6 +72,7 @@ public class Meeting {
         return startTime.getTime();
     }
 
+    @Exclude
     public Date getStartTimeAsDate() {
         return startTime;
     }

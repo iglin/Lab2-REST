@@ -32,6 +32,7 @@ import com.iglin.lab2rest.model.MeetingsContentProvider;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -157,10 +158,12 @@ public class MeetingListActivity extends AppCompatActivity {
 
         if (searchEnabled) {
             if ((searchText != null && searchText.length() > 0)) {
-                if (onlyFutureMeetings) query =  database.child("meetings").orderByChild("description").startAt(searchText);
+                if (onlyFutureMeetings) query =  database.child("meetings")
+                        .orderByChild("description").startAt(searchText)
+                        .orderByChild("endTime").startAt((new Date()).getTime());
                 else query = database.child("meetings").orderByChild("description").startAt(searchText);
             } else if (onlyFutureMeetings) {
-                query =  database.child("meetings");
+                query =  database.child("meetings").orderByChild("endTime").startAt((new Date()).getTime());
             } else {
                 query =  database.child("meetings");
             }
