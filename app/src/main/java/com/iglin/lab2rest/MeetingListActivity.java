@@ -1,5 +1,6 @@
 package com.iglin.lab2rest;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.iglin.lab2rest.model.DateTimeFormatter;
 import com.iglin.lab2rest.model.Meeting;
@@ -48,9 +50,26 @@ public class MeetingListActivity extends AppCompatActivity {
      */
     private boolean mTwoPane;
 
+    private RetainedFragment dataFragment;
+
     private FirebaseAuth firebaseAuth;
     private FirebaseUser firebaseUser;
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    private ValueEventListener listener;
+    private Query query;
+
+    private MeetingsSearchDialog dialog;
+    private boolean searchEnabled;
+    private boolean onlyFutureMeetings;
+    private String searchText;
+
+    public String getSearchText() {
+        return searchText;
+    }
+
+    public boolean isOnlyFutureMeetings() {
+        return onlyFutureMeetings;
+    }
 
     private final MeetingsContentProvider meetingsContentProvider = new MeetingsContentProvider();
 
@@ -67,9 +86,7 @@ public class MeetingListActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-
         if (firebaseUser == null) {
-            // Not logged in, launch the Log In activity
             loadLogInView();
         }
 
@@ -79,19 +96,34 @@ public class MeetingListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
+        FragmentManager fm = getFragmentManager();
+        dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
+
+        // create the fragment and data the first time
+        if (dataFragment == null) {
+            // add the fragment
+            dataFragment = new RetainedFragment();
+            fm.beginTransaction().add(dataFragment, "data").commit();
+            // load the data from the web
+            dataFragment.setSearchEnabled(false);
+            dataFragment.setOnlyFutureMeetings(false);
+            dataFragment.setSearchText(null);
+        }
+        searchEnabled = dataFragment.isSearchEnabled();
+        onlyFutureMeetings = dataFragment.isOnlyFutureMeetings();
+        searchText = dataFragment.getSearchText();
+
+        dialog = new MeetingsSearchDialog(this);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebaseAuth.signOut();
-                loadLogInView();
-               // Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //        .setAction("Action", null).show();
+                dialog.show();
             }
         });
 
-        final View recyclerView = findViewById(R.id.meeting_list);
-        assert recyclerView != null;
+     //   View recyclerView = findViewById(R.id.meeting_list);
+      //  assert recyclerView != null;
        // setupRecyclerView((RecyclerView) recyclerView);
 
         if (findViewById(R.id.meeting_detail_container) != null) {
@@ -102,24 +134,64 @@ public class MeetingListActivity extends AppCompatActivity {
             mTwoPane = true;
         }
 
-        database.child("meetings").addValueEventListener(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        List<Meeting> result = new ArrayList<>();
-                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                            Meeting meeting = snapshot.getValue(Meeting.class);
-                            meeting.setId(snapshot.getKey());
-                            result.add(meeting);
-                        }
+        updateMeetingsListeners(searchEnabled ,onlyFutureMeetings, searchText);
+    }
 
-                        setupRecyclerView((RecyclerView) recyclerView, result);
-                    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // store the data in the fragment
+        dataFragment.setSearchEnabled(searchEnabled);
+        dataFragment.setOnlyFutureMeetings(onlyFutureMeetings);
+        dataFragment.setSearchText(searchText);
+    }
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) { }
+    public void updateMeetingsListeners(boolean searchEnabled, boolean onlyFutureMeetings, String searchText) {
+        this.searchEnabled = searchEnabled;
+        this.onlyFutureMeetings = onlyFutureMeetings;
+        this.searchText = searchText;
+
+        if (query != null && listener != null) {
+            query.removeEventListener(listener);
+        }
+
+        if (searchEnabled) {
+            if ((searchText != null && searchText.length() > 0)) {
+                if (onlyFutureMeetings) query =  database.child("meetings").orderByChild("description").startAt(searchText);
+                else query = database.child("meetings").orderByChild("description").startAt(searchText);
+            } else if (onlyFutureMeetings) {
+                query =  database.child("meetings");
+            } else {
+                query =  database.child("meetings");
+            }
+        } else {
+            query = database.child("meetings");
+        }
+        System.out.println(query.toString());
+
+        System.out.println(searchEnabled + " " + searchText);
+
+        listener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                List<Meeting> result = new ArrayList<>();
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Meeting meeting = snapshot.getValue(Meeting.class);
+                    meeting.setId(snapshot.getKey());
+                    result.add(meeting);
                 }
-        );
+
+                View recyclerView = findViewById(R.id.meeting_list);
+                assert recyclerView != null;
+
+                setupRecyclerView((RecyclerView) recyclerView, result);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        };
+
+        query.addValueEventListener(listener);
     }
 
     @Override
@@ -143,13 +215,13 @@ public class MeetingListActivity extends AppCompatActivity {
                 startActivity(intent);
                 break;
             case R.id.item_search:
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "Ok, just give me a dollar", Toast.LENGTH_SHORT);
-                toast.show();
+                dialog.show();
                 break;
             case R.id.item_settings:
                 break;
             case R.id.item_logout:
+                firebaseAuth.signOut();
+                loadLogInView();
                 break;
         }
 
