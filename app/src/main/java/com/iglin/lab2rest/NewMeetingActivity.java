@@ -94,7 +94,16 @@ public class NewMeetingActivity extends AppCompatActivity {
         meeting.setStartTime(startTime);
         meeting.setEndTime(endTime);
 
-        DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        database.child("meetings").push().setValue(meeting);
+        try {
+            DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            database.child("meetings").push().setValue(meeting);
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Meeting successfully created.", Toast.LENGTH_SHORT);
+            toast.show();
+        } catch (Throwable e) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Error during saving data to the server! Check your network connection.", Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }
