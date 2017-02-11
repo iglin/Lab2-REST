@@ -91,8 +91,11 @@ public class Meeting {
     }
 
     public String representDetails() throws ParseException {
-        String result = description + "\n\n"
-                + priority + "\n\n"
+        String result = "";
+        if (description != null && description.length() > 0) {
+            result = description + "\n\n";
+        }
+        result += priority + "\n\n"
                 + "From: " + DateTimeFormatter.getFullFormat(startTime) + "\n"
                 + "To: " + DateTimeFormatter.getFullFormat(endTime);
         if (participants == null) return result;

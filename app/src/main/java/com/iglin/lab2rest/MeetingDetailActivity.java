@@ -65,21 +65,6 @@ public class MeetingDetailActivity extends AppCompatActivity {
                         meeting.addParticipant(participant);
 
                         dataSnapshot.child("meetings").child(meetingId).getRef().setValue(meeting);
-
-                      /*  if (!dataSnapshot.child("meetings").child(meetingId).hasChild("participants")) {
-                            toSave = new HashMap<>();
-                            Map<String, Object> map = new HashMap<>();
-                            map.put(userId, participant);
-                            toSave.put("participants", map);
-                            Meeting meeting = dataSnapshot.child("meetings").child(meetingId).getValue(Meeting.class);
-                            meeting.addParticipant(participant);
-                            dataSnapshot.child("meetings").child(meetingId).getRef().setValue(meeting);
-                        } else {
-                            toSave = dataSnapshot.child("meetings").child(meetingId).child("participants")
-                                    .getValue(Map.class);
-                            toSave.put(userId, participant);
-                            dataSnapshot.child("meetings").child(meetingId).child("participants").getRef().setValue(toSave);
-                        }*/
                     }
 
                     @Override
