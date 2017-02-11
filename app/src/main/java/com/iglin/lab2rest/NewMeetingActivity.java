@@ -23,10 +23,13 @@ import android.widget.Toast;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.iglin.lab2rest.model.DateTimeFormatter;
 import com.iglin.lab2rest.model.Meeting;
 import com.iglin.lab2rest.model.Priority;
 
 import java.sql.Time;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Objects;
 
 public class NewMeetingActivity extends AppCompatActivity {
@@ -91,8 +94,15 @@ public class NewMeetingActivity extends AppCompatActivity {
         String endTime = startTime;
         startTime += "T" + timePicker1.getCurrentHour() + ":" + timePicker1.getCurrentMinute() + ":00";
         endTime += "T" + timePicker2.getCurrentHour() + ":" + timePicker2.getCurrentMinute() + ":00";
-        meeting.setStartTime(startTime);
-        meeting.setEndTime(endTime);
+        try {
+            meeting.setStartTime(DateTimeFormatter.getDate(startTime));
+            meeting.setEndTime(DateTimeFormatter.getDate(endTime));
+        } catch (ParseException e) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    "Couldn't parse date!", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
 
         try {
             DatabaseReference database = FirebaseDatabase.getInstance().getReference();

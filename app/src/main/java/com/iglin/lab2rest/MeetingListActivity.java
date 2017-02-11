@@ -255,8 +255,8 @@ public class MeetingListActivity extends AppCompatActivity {
             holder.mIdView.setText(mValues.get(position).getName());
             try {
                 holder.mContentView.setText(mValues.get(position).getPriority() + "\n"
-                        + DateTimeFormatter.getShortFormat(mValues.get(position).getStartTime()) + "\n"
-                        + DateTimeFormatter.getShortFormat(mValues.get(position).getEndTime()));
+                        + DateTimeFormatter.getShortFormat(mValues.get(position).getStartTimeAsDate()) + "\n"
+                        + DateTimeFormatter.getShortFormat(mValues.get(position).getEndTimeAsDate()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }

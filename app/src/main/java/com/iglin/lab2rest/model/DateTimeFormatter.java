@@ -28,4 +28,12 @@ public class DateTimeFormatter {
     public static String getFullFormat(String date) throws ParseException {
         return fullFormatter.format(formatter.parse(date));
     }
+
+    public static String getShortFormat(Date date) throws ParseException {
+        return shortFormatter.format(date);
+    }
+
+    public static String getFullFormat(Date date) throws ParseException {
+        return fullFormatter.format(date);
+    }
 }

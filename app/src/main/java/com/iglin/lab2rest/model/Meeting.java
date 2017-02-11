@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.database.Exclude;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +18,8 @@ public class Meeting {
     private String id;
     private String name;
     private String description;
-    private String startTime;
-    private String endTime;
+    private Date startTime;
+    private Date endTime;
     private Priority priority;
     private Map<String, Participant> participants;
 
@@ -49,19 +50,37 @@ public class Meeting {
         this.description = description;
     }
 
-    public String getEndTime() {
+    public long getEndTime() {
+        return endTime.getTime();
+    }
+
+    public Date getEndTimeAsDate() {
         return endTime;
     }
 
-    public void setEndTime(String endTime) {
+    @Exclude
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
-    public String getStartTime() {
+    public void setEndTime(long endTime) {
+        this.endTime = new Date(endTime);
+    }
+
+    public long getStartTime() {
+        return startTime.getTime();
+    }
+
+    public Date getStartTimeAsDate() {
         return startTime;
     }
 
-    public void setStartTime(String startTime) {
+    public void setStartTime(long startTime) {
+        this.startTime = new Date(startTime);
+    }
+
+    @Exclude
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
