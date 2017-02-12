@@ -112,7 +112,8 @@ public class MeetingDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, MeetingListActivity.class));
+          //  navigateUpTo(new Intent(this, MeetingListActivity.class));
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);

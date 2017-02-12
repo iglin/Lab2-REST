@@ -1,5 +1,7 @@
 package com.iglin.lab2rest.model;
 
+import android.support.annotation.Nullable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.firebase.database.Exclude;
 
@@ -42,6 +44,7 @@ public class Meeting {
         this.name = name;
     }
 
+    @Nullable
     public String getDescription() {
         return description;
     }

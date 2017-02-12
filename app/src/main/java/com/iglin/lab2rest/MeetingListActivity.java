@@ -139,6 +139,36 @@ public class MeetingListActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onRestart() {
+        super.onRestart();
+        FragmentManager fm = getFragmentManager();
+        dataFragment = (RetainedFragment) fm.findFragmentByTag("data");
+
+        // create the fragment and data the first time
+        if (dataFragment == null) {
+            // add the fragment
+            dataFragment = new RetainedFragment();
+            fm.beginTransaction().add(dataFragment, "data").commit();
+            // load the data from the web
+            dataFragment.setSearchEnabled(false);
+            dataFragment.setOnlyFutureMeetings(false);
+            dataFragment.setSearchText(null);
+        }
+        searchEnabled = dataFragment.isSearchEnabled();
+        onlyFutureMeetings = dataFragment.isOnlyFutureMeetings();
+        searchText = dataFragment.getSearchText();
+
+        dialog = new MeetingsSearchDialog(this);
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.show();
+            }
+        });
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         // store the data in the fragment
@@ -147,7 +177,15 @@ public class MeetingListActivity extends AppCompatActivity {
         dataFragment.setSearchText(searchText);
     }
 
-    public void updateMeetingsListeners(boolean searchEnabled, boolean onlyFutureMeetings, String searchText) {
+    @Override
+    protected void onStop() {
+        super.onStop();
+        dataFragment.setSearchEnabled(searchEnabled);
+        dataFragment.setOnlyFutureMeetings(onlyFutureMeetings);
+        dataFragment.setSearchText(searchText);
+    }
+
+    public void updateMeetingsListeners(final boolean searchEnabled, final boolean onlyFutureMeetings, final String searchText) {
         this.searchEnabled = searchEnabled;
         this.onlyFutureMeetings = onlyFutureMeetings;
         this.searchText = searchText;
@@ -156,32 +194,31 @@ public class MeetingListActivity extends AppCompatActivity {
             query.removeEventListener(listener);
         }
 
-        if (searchEnabled) {
-            if ((searchText != null && searchText.length() > 0)) {
-                if (onlyFutureMeetings) query =  database.child("meetings")
-                        .orderByChild("description").startAt(searchText)
-                        .orderByChild("endTime").startAt((new Date()).getTime());
-                else query = database.child("meetings").orderByChild("description").startAt(searchText);
-            } else if (onlyFutureMeetings) {
-                query =  database.child("meetings").orderByChild("endTime").startAt((new Date()).getTime());
-            } else {
-                query =  database.child("meetings");
-            }
+        if (searchEnabled && onlyFutureMeetings) {
+            query = database.child("meetings").orderByChild("endTime").startAt((new Date()).getTime());
         } else {
-            query = database.child("meetings");
+            query =  database.child("meetings");
         }
-        System.out.println(query.toString());
-
-        System.out.println(searchEnabled + " " + searchText);
 
         listener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 List<Meeting> result = new ArrayList<>();
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Meeting meeting = snapshot.getValue(Meeting.class);
-                    meeting.setId(snapshot.getKey());
-                    result.add(meeting);
+
+                if (searchEnabled && (searchText != null && searchText.length() > 0)) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Meeting meeting = snapshot.getValue(Meeting.class);
+                        if (meeting.getDescription() != null && meeting.getDescription().contains(searchText)) {
+                            meeting.setId(snapshot.getKey());
+                            result.add(meeting);
+                        }
+                    }
+                } else {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Meeting meeting = snapshot.getValue(Meeting.class);
+                        meeting.setId(snapshot.getKey());
+                        result.add(meeting);
+                    }
                 }
 
                 View recyclerView = findViewById(R.id.meeting_list);
