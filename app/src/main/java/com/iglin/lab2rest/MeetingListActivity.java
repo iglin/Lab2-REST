@@ -15,7 +15,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,7 +27,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.iglin.lab2rest.model.DateTimeFormatter;
 import com.iglin.lab2rest.model.Meeting;
-import com.iglin.lab2rest.model.MeetingsContentProvider;
 
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -71,8 +69,6 @@ public class MeetingListActivity extends AppCompatActivity {
     public boolean isOnlyFutureMeetings() {
         return onlyFutureMeetings;
     }
-
-    private final MeetingsContentProvider meetingsContentProvider = new MeetingsContentProvider();
 
     private void loadLogInView() {
         Intent intent = new Intent(this, LogInActivity.class);

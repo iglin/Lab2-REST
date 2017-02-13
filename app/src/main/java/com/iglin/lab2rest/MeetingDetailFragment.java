@@ -15,7 +15,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.iglin.lab2rest.model.Meeting;
-import com.iglin.lab2rest.model.MeetingsContentProvider;
 
 import java.text.ParseException;
 
@@ -33,8 +32,6 @@ public class MeetingDetailFragment extends Fragment {
     public static final String ARG_ITEM_ID = "item_id";
 
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-
-    private final MeetingsContentProvider meetingsContentProvider = new MeetingsContentProvider();
 
     /**
      * The dummy content this fragment is presenting.
@@ -73,16 +70,21 @@ public class MeetingDetailFragment extends Fragment {
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                mItem = dataSnapshot.getValue(Meeting.class);
-                                mItem.setId(dataSnapshot.getKey());
-                                if (appBarLayout != null && mItem != null) {
-                                    appBarLayout.setTitle(mItem.getName());
-                                    try {
-                                        TextView textView = (TextView) activity.findViewById(R.id.meeting_detail);
-                                        if (textView != null) textView.setText(mItem.representDetails());
-                                    } catch (ParseException e) {
-                                        e.printStackTrace();
+                                if (dataSnapshot.exists()) {
+                                    mItem = dataSnapshot.getValue(Meeting.class);
+                                    mItem.setId(dataSnapshot.getKey());
+                                    if (appBarLayout != null && mItem != null) {
+                                        appBarLayout.setTitle(mItem.getName());
+                                        try {
+                                            TextView textView = (TextView) activity.findViewById(R.id.meeting_detail);
+                                            if (textView != null)
+                                                textView.setText(mItem.representDetails());
+                                        } catch (ParseException e) {
+                                            e.printStackTrace();
+                                        }
                                     }
+                                } else {
+                                    getActivity().onBackPressed();
                                 }
                             }
 
