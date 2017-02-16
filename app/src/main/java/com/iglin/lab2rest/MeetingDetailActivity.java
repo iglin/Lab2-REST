@@ -1,5 +1,7 @@
 package com.iglin.lab2rest;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -160,8 +162,17 @@ public class MeetingDetailActivity extends AppCompatActivity {
                 acceptMeeting();
                 break;
             case R.id.item_invite:
-                ContactsDialog contactsDialog = new ContactsDialog(this);
-                contactsDialog.show();
+              //  ContactsDialog contactsDialog = new ContactsDialog(this);
+               // contactsDialog.show();
+
+                /*FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                ContactsFragment fragment = new ContactsFragment();
+                fragmentTransaction.add(R.id.fragment_container, fragment);
+                fragmentTransaction.commit();*/
+                Intent intent = new Intent(this, ContactsActivity.class);
+                startActivity(intent);
+
                 /*Toast toast2 = Toast.makeText(getApplicationContext(),
                         "Invite", Toast.LENGTH_SHORT);
                 toast2.show();*/

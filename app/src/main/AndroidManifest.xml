@@ -40,7 +40,8 @@
         <activity
             android:name=".NewMeetingActivity"
             android:label="@string/title_activity_new_meeting"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".ContactsActivity"></activity>
     </application>
 
 </manifest>

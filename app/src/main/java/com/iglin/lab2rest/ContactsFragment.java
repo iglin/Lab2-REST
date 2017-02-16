@@ -1,8 +1,7 @@
-package com.iglin.lab2rest.model;
+package com.iglin.lab2rest;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.Dialog;
+import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -11,31 +10,21 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.EditText;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
-import com.iglin.lab2rest.MeetingDetailActivity;
-import com.iglin.lab2rest.R;
-
-import static android.provider.Settings.Global.getString;
-import static java.lang.Long.getLong;
-
 /**
- * Created by user on 13.02.2017.
+ * Created by user on 16.02.2017.
  */
 
-public class ContactsDialog extends Dialog implements
+public class ContactsFragment extends Fragment implements
         LoaderManager.LoaderCallbacks<Cursor>,
-        AdapterView.OnItemClickListener, View.OnClickListener {
-    /*
-     * Defines an array that contains column names to move from
-     * the Cursor to the ListView.
-     */
+        AdapterView.OnItemClickListener {
     @SuppressLint("InlinedApi")
     private final static String[] FROM_COLUMNS = {
             Build.VERSION.SDK_INT
@@ -75,11 +64,17 @@ public class ContactsDialog extends Dialog implements
                             >= Build.VERSION_CODES.HONEYCOMB ?
                             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY :
                             ContactsContract.Contacts.DISPLAY_NAME
-
             };
 
-    @SuppressLint("InlinedApi")
+    /*
+     * Constructs search criteria from the search string
+     * and email MIME type
+     */
     private static final String SELECTION =
+            /*
+             * Searches for an email address
+             * that matches the search string
+             */
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
                     ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?" :
                     ContactsContract.Contacts.DISPLAY_NAME + " LIKE ?";
@@ -89,76 +84,47 @@ public class ContactsDialog extends Dialog implements
     // The column index for the LOOKUP_KEY column
     private static final int LOOKUP_KEY_INDEX = 1;
 
-    public ContactsDialog(Activity a) {
-        super(a);
-        // TODO Auto-generated constructor stub
-        this.activity = (MeetingDetailActivity) a;
+    // Defines a variable for the search string
+    private String mSearchString = "";
+    // Defines the array to hold values that replace the ?
+    private String[] mSelectionArgs = { mSearchString };
+
+    public ContactsFragment() {}
+
+    // A UI Fragment must inflate its View
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the fragment layout
+        return inflater.inflate(R.layout.contact_list_fragment,
+                container, false);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.search_dialog);
-
-        /*findViewById(R.id.buttonFind).setOnClickListener(this);
-        findViewById(R.id.buttonCancel).setOnClickListener(this);
-        findViewById(R.id.buttonClear).setOnClickListener(this);*/
-
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        // Gets the ListView from the View list of the parent activity
         mContactsList =
-                (ListView) activity.findViewById(R.id.contacts_list_view);
-        System.out.println(mContactsList.toString());
+                (ListView) getActivity().findViewById(R.id.contacts_list);
         // Gets a CursorAdapter
         mCursorAdapter = new SimpleCursorAdapter(
-                activity,
+                getActivity(),
                 R.layout.contacts_list_item,
                 null,
                 FROM_COLUMNS, TO_IDS,
                 0);
         // Sets the adapter for the ListView
-        System.out.println(mCursorAdapter.toString());
         mContactsList.setAdapter(mCursorAdapter);
 
         mContactsList.setOnItemClickListener(this);
 
-        activity.getLoaderManager().initLoader(0, null, this);
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
-        /*
-         * Makes search string into pattern and
-         * stores it in the selection array
-         */
-        String [] mSelectionArgs = new String[] { "%" + "" + "%", "%" + "" + "%" };
-        // Starts the query
-        return new CursorLoader(
-                activity,
-                ContactsContract.Contacts.CONTENT_URI,
-                PROJECTION,
-                SELECTION,
-                mSelectionArgs,
-                null
-        );
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        // Put the result Cursor in the adapter for the ListView
-        mCursorAdapter.swapCursor(cursor);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-        // Delete the reference to the existing Cursor
-        mCursorAdapter.swapCursor(null);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
     public void onItemClick(
             AdapterView<?> parent, View item, int position, long rowID) {
         // Get the Cursor
-        Cursor cursor = ((SimpleCursorAdapter) parent.getAdapter()).getCursor();
+        Cursor cursor = ((CursorAdapter) parent.getAdapter()).getCursor();
         // Move to the selected contact
         cursor.moveToPosition(position);
         // Get the _ID value
@@ -174,7 +140,32 @@ public class ContactsDialog extends Dialog implements
     }
 
     @Override
-    public void onClick(View view) {
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle args) {
+        /*
+         * Makes search string into pattern and
+         * stores it in the selection array
+         */
+        mSelectionArgs[0] = "%" + mSearchString + "%";
+        // Starts the query
+        return new CursorLoader(
+                getActivity(),
+                ContactsContract.Contacts.CONTENT_URI,
+                PROJECTION,
+                null,
+                null,
+                null
+        );
+    }
+
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Put the result Cursor in the adapter for the ListView
+        mCursorAdapter.swapCursor(cursor);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Delete the reference to the existing Cursor
+        mCursorAdapter.swapCursor(null);
 
     }
 }
