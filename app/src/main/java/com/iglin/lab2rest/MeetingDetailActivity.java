@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.iglin.lab2rest.model.ContactsDialog;
 import com.iglin.lab2rest.model.Meeting;
 import com.iglin.lab2rest.model.Participant;
 
@@ -159,9 +160,11 @@ public class MeetingDetailActivity extends AppCompatActivity {
                 acceptMeeting();
                 break;
             case R.id.item_invite:
-                Toast toast2 = Toast.makeText(getApplicationContext(),
+                ContactsDialog contactsDialog = new ContactsDialog(this);
+                contactsDialog.show();
+                /*Toast toast2 = Toast.makeText(getApplicationContext(),
                         "Invite", Toast.LENGTH_SHORT);
-                toast2.show();
+                toast2.show();*/
                 break;
             case R.id.item_delete:
                 deleteMeeting();
