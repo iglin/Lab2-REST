@@ -140,12 +140,9 @@ public class ContactsFragment extends Fragment implements
          * the details for a contact.
          */
 
-        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(),
-                cursor.getString(LOOKUP_KEY_INDEX), Toast.LENGTH_SHORT);
-        toast2.show();
-        Log.i(ContactsFragment.class.toString(), cursor.getString(LOOKUP_KEY_INDEX));
+        Log.i(getClass().getName(), cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY)));
 
-        System.out.println("Clicked on item " + cursor.getString(LOOKUP_KEY_INDEX));
+       // getActivity().se
     }
 
     @Override

@@ -3,10 +3,14 @@ package com.iglin.lab2rest;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -162,20 +166,13 @@ public class MeetingDetailActivity extends AppCompatActivity {
                 acceptMeeting();
                 break;
             case R.id.item_invite:
-              //  ContactsDialog contactsDialog = new ContactsDialog(this);
-               // contactsDialog.show();
+           //     Intent intent = new Intent(this, ContactsActivity.class);
+           //     startActivity(intent);
 
-                /*FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                ContactsFragment fragment = new ContactsFragment();
-                fragmentTransaction.add(R.id.fragment_container, fragment);
-                fragmentTransaction.commit();*/
-                Intent intent = new Intent(this, ContactsActivity.class);
-                startActivity(intent);
+                Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
+                pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE); // Show user only contacts w/ phone numbers
+                startActivityForResult(pickContactIntent, 1);
 
-                /*Toast toast2 = Toast.makeText(getApplicationContext(),
-                        "Invite", Toast.LENGTH_SHORT);
-                toast2.show();*/
                 break;
             case R.id.item_delete:
                 deleteMeeting();
@@ -184,5 +181,35 @@ public class MeetingDetailActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check which request we're responding to
+        if (requestCode == 1) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                // The user picked a contact.
+                // The Intent's data Uri identifies which contact was selected.
+                Uri contactUri = data.getData();
+
+                String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+
+                // Perform the query on the contact to get the NUMBER column
+                // We don't need a selection or sort order (there's only one result for the given URI)
+                // CAUTION: The query() method should be called from a separate thread to avoid blocking
+                // your app's UI thread. (For simplicity of the sample, this code doesn't do that.)
+                // Consider using CursorLoader to perform the query.
+                Cursor cursor = getContentResolver()
+                        .query(contactUri, projection, null, null, null);
+                cursor.moveToFirst();
+
+                // Retrieve the phone number from the NUMBER column
+                int column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                String number = cursor.getString(column);
+                Log.i(getClass().getName(), "Picked " + number);
+                // Do something with the contact here (bigger example below)
+            }
+        }
     }
 }
