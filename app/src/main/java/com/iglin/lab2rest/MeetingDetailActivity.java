@@ -43,6 +43,8 @@ public class MeetingDetailActivity extends AppCompatActivity {
 
     private DatabaseReference database = FirebaseDatabase.getInstance().getReference();
 
+    private static final int REQ_CODE_FOR_CONTACT = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,9 +171,10 @@ public class MeetingDetailActivity extends AppCompatActivity {
            //     Intent intent = new Intent(this, ContactsActivity.class);
            //     startActivity(intent);
 
-                Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
-                pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE); // Show user only contacts w/ phone numbers
-                startActivityForResult(pickContactIntent, 1);
+           //     Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
+              //  pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_URI); // Show user only contacts w/ phone numbers
+                Intent pickContactIntent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+                startActivityForResult(pickContactIntent, REQ_CODE_FOR_CONTACT);
 
                 break;
             case R.id.item_delete:
@@ -186,14 +189,14 @@ public class MeetingDetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == 1) {
+        if (requestCode == REQ_CODE_FOR_CONTACT) {
             // Make sure the request was successful
             if (resultCode == RESULT_OK) {
                 // The user picked a contact.
                 // The Intent's data Uri identifies which contact was selected.
                 Uri contactUri = data.getData();
 
-                String[] projection = {ContactsContract.CommonDataKinds.Phone.NUMBER};
+                String[] projection = {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY};
 
                 // Perform the query on the contact to get the NUMBER column
                 // We don't need a selection or sort order (there's only one result for the given URI)
@@ -202,13 +205,15 @@ public class MeetingDetailActivity extends AppCompatActivity {
                 // Consider using CursorLoader to perform the query.
                 Cursor cursor = getContentResolver()
                         .query(contactUri, projection, null, null, null);
-                cursor.moveToFirst();
+                if (cursor != null && cursor.getCount() > 0) {
+                    cursor.moveToFirst();
 
-                // Retrieve the phone number from the NUMBER column
-                int column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
-                String number = cursor.getString(column);
-                Log.i(getClass().getName(), "Picked " + number);
-                // Do something with the contact here (bigger example below)
+                    // Retrieve the phone number from the NUMBER column
+                    int column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY);
+                    String name = cursor.getString(column);
+                    Log.i(getClass().getName(), "Picked " + name);
+                    // Do something with the contact here (bigger example below)
+                }
             }
         }
     }
