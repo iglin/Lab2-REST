@@ -10,14 +10,9 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.iglin.lab2rest.ContactsActivity">
 
-    <ScrollView
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:id="@+id/fragment_place" />
-    </ScrollView>
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_place"></LinearLayout>
 </RelativeLayout>

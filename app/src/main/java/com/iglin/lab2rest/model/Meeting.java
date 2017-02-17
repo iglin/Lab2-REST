@@ -125,7 +125,8 @@ public class Meeting {
         if (participants == null) return result;
         result += "\n\nParticipants: ";
         for (Participant participant : participants.values()) {
-            result += "\n" + participant.getName() + ", " + participant.getPosition();
+            result += "\n" + participant.getName();
+            if (participant.getPosition() != null) result += ", " + participant.getPosition();
         }
         return result;
     }

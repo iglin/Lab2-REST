@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 /**
  * Created by user on 16.02.2017.
@@ -137,6 +139,13 @@ public class ContactsFragment extends Fragment implements
          * You can use mContactUri as the content URI for retrieving
          * the details for a contact.
          */
+
+        Toast toast2 = Toast.makeText(getActivity().getApplicationContext(),
+                cursor.getString(LOOKUP_KEY_INDEX), Toast.LENGTH_SHORT);
+        toast2.show();
+        Log.i(ContactsFragment.class.toString(), cursor.getString(LOOKUP_KEY_INDEX));
+
+        System.out.println("Clicked on item " + cursor.getString(LOOKUP_KEY_INDEX));
     }
 
     @Override
