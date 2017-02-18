@@ -5,7 +5,7 @@ package com.iglin.lab2rest.model;
  */
 
 public enum Priority {
-    ASAP, Planned, Optional;
+    Urgent, Planned, Optional;
 
     Priority() {
     }

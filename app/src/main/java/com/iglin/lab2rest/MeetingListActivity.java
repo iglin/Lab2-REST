@@ -5,17 +5,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -216,7 +216,6 @@ public class MeetingListActivity extends AppCompatActivity {
                         result.add(meeting);
                     }
                 }
-
                 View recyclerView = findViewById(R.id.meeting_list);
                 assert recyclerView != null;
 
@@ -224,7 +223,11 @@ public class MeetingListActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) { }
+            public void onCancelled(DatabaseError databaseError) {
+                Toast toast = new Toast(getApplicationContext());
+                toast.setText("Error! Could not read meetings from the server.");
+                toast.show();
+            }
         };
 
         query.addValueEventListener(listener);
@@ -252,8 +255,6 @@ public class MeetingListActivity extends AppCompatActivity {
                 break;
             case R.id.item_search:
                 dialog.show();
-                break;
-            case R.id.item_settings:
                 break;
             case R.id.item_logout:
                 firebaseAuth.signOut();

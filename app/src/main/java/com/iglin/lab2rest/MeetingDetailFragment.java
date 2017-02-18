@@ -1,8 +1,8 @@
 package com.iglin.lab2rest;
 
 import android.app.Activity;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.os.Bundle;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +89,9 @@ public class MeetingDetailFragment extends Fragment {
                             }
 
                             @Override
-                            public void onCancelled(DatabaseError databaseError) { }
+                            public void onCancelled(DatabaseError databaseError) {
+                                ((MeetingDetailActivity) activity).showErrorToast("Error! Could not read meeting from database.");
+                            }
                         }
                 );
         }

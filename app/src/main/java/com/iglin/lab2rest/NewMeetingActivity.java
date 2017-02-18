@@ -1,22 +1,14 @@
 package com.iglin.lab2rest;
 
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -27,9 +19,7 @@ import com.iglin.lab2rest.model.DateTimeFormatter;
 import com.iglin.lab2rest.model.Meeting;
 import com.iglin.lab2rest.model.Priority;
 
-import java.sql.Time;
 import java.text.ParseException;
-import java.util.Date;
 import java.util.Objects;
 
 public class NewMeetingActivity extends AppCompatActivity {
