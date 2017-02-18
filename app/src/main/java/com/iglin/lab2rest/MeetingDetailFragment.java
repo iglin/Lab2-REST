@@ -84,7 +84,7 @@ public class MeetingDetailFragment extends Fragment {
                                         }
                                     }
                                 } else {
-                                    getActivity().onBackPressed();
+                                    if (getActivity() != null) getActivity().onBackPressed();
                                 }
                             }
 

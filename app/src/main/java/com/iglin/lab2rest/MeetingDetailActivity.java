@@ -103,11 +103,27 @@ public class MeetingDetailActivity extends AppCompatActivity {
 
                 String meetingId = getIntent().getStringExtra(MeetingDetailFragment.ARG_ITEM_ID);
 
-                System.out.println(meetingId + " " + userId + participant.getName());
-
                 Meeting meeting = dataSnapshot.child("meetings").child(meetingId).getValue(Meeting.class);
                 meeting.addParticipant(participant);
 
+                dataSnapshot.child("meetings").child(meetingId).getRef().setValue(meeting);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                showErrorToast("Error! Unable to update meeting.");
+            }
+        });
+    }
+
+    private void addParticipantFromContacts(final Participant participant) {
+        final String meetingId = getIntent().getStringExtra(MeetingDetailFragment.ARG_ITEM_ID);
+       // database.child("meetings").child(meetingId).child("participants").push().setValue(participant);
+        database.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Meeting meeting = dataSnapshot.child("meetings").child(meetingId).getValue(Meeting.class);
+                meeting.addParticipant(participant);
                 dataSnapshot.child("meetings").child(meetingId).getRef().setValue(meeting);
             }
 
@@ -196,7 +212,7 @@ public class MeetingDetailActivity extends AppCompatActivity {
                 // The Intent's data Uri identifies which contact was selected.
                 Uri contactUri = data.getData();
 
-                String[] projection = {ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY};
+                String[] projection = {ContactsContract.CommonDataKinds.Identity.IDENTITY, ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY};
 
                 // Perform the query on the contact to get the NUMBER column
                 // We don't need a selection or sort order (there's only one result for the given URI)
@@ -211,8 +227,13 @@ public class MeetingDetailActivity extends AppCompatActivity {
                     // Retrieve the phone number from the NUMBER column
                     int column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME_PRIMARY);
                     String name = cursor.getString(column);
+                    column = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Identity.IDENTITY);
                     Log.i(getClass().getName(), "Picked " + name);
                     // Do something with the contact here (bigger example below)
+                    Participant participant = new Participant();
+                    participant.setId(cursor.getString(column));
+                    participant.setName(name);
+                    addParticipantFromContacts(participant);
                 }
             }
         }
